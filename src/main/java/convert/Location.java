@@ -23,8 +23,8 @@ public class Location {
 		for (int i = 0; i < locs.length; i++) {
 			Location loc = new Location();
 			locs[i] = loc;
-			loc.text = a1[i];
-			loc.coordinates = a2[i];
+			loc.text = a1[i].trim();
+			loc.coordinates = a2[i].trim();
 
 			
 			double[] cc = convert(loc.coordinates);
@@ -66,10 +66,10 @@ public class Location {
         	String s = dms.replace("°", "").trim();
         	if (s.length() > 0) {
 				String[] bits = s.split("[\\s,]");
-				double sign = bits[0].endsWith("N") ? 1.0 : -1.0;
+				double sign = bits[0].endsWith("S") ? -1.0 : 1.0;
 				double[] result = new double[2]; 
 				result[0] = sign * Double.parseDouble(bits[0].substring(0, bits[0].length() - 1));
-				sign = bits[1].endsWith("E") ? 1.0 : -1.0;
+				sign = bits[1].endsWith("W") ? -1.0 : 1.0;
 				result[1] = sign * Double.parseDouble(bits[1].substring(0, bits[1].length() - 1));
 				return result;
 			}

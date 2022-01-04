@@ -1,6 +1,31 @@
 var map = null;
+var themes = null;
+
+initThemes();
 
 initMap();
+
+function initThemes() {
+	themes = [];
+	data.forEach(function(item) {
+		item.themes.forEach(function(theme) {
+			themes.push(theme);
+		});
+	});
+
+	themes = themes.sort().filter(function(item, pos, ary) {
+		return !pos || item != ary[pos - 1];
+	});
+
+	let sel = $('select#theme-select');
+	themes.forEach(function(theme) {
+		let opt = $('<option></option>');
+		$(sel).append(opt);
+		$(opt).text(theme);
+	});
+
+	$(sel).selectpicker();
+}
 
 function initMap() {
 	map = L.map('map').setView([53, -0.29], 7);
@@ -24,7 +49,11 @@ function updateMarkers() {
 			console.log(item);
 			if (locItem.lat) {
 				var marker = L.marker([locItem.lat, locItem.lng]);
-				marker.bindPopup('<div class="title">' + item.code + ' ' + item.title + '</div><div class="location">' + locItem.text +'</div><div class="description">' + item.longTitle + "</div>").openPopup();
+				marker.bindPopup('<div class="title">' + item.code + ' '
+					+ item.title + '</div><div class="location">'
+					+ locItem.text + '</div><div class="description">'
+					+ item.longTitle + "</div><div>"
+					+ item.themes + "</div>").openPopup();
 				marker.addTo(map);
 			}
 		});

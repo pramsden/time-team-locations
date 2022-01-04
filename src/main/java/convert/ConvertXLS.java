@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.collections4.functors.ForClosure;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -58,6 +59,11 @@ public class ConvertXLS {
 				epi.locations = Location.parse(row.getCell(COL_LOCATION).toString(),
 						row.getCell(COL_COORDINATES).toString());
 				epi.themes = row.getCell(COL_THEME) == null ? null : row.getCell(COL_THEME).toString().split(";");
+				if (epi.themes != null) {
+					for (int j = 0; j < epi.themes.length; j++) {
+						epi.themes[j] = epi.themes[j].trim();
+					}
+				}
 
 				System.out.println(epi);
 			}
