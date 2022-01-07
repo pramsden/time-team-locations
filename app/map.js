@@ -5,6 +5,14 @@ initThemes();
 
 initMap();
 
+initActions();
+
+function initActions() {
+	$('.filtertext').on('keyup', function() {
+		updateMarkers();
+	});
+}
+
 function initThemes() {
 	themes = [];
 	data.forEach(function(item) {
@@ -24,7 +32,10 @@ function initThemes() {
 		$(opt).text(theme);
 	});
 
-	$(sel).selectpicker();
+	$(sel).on('change', function() {
+		themes = $('select#theme-select').val();
+		updateMarkers();
+	});
 }
 
 function initMap() {
@@ -43,18 +54,54 @@ function initMap() {
 }
 
 function updateMarkers() {
+	let episode = $('#episode').val();
+	let descr = $('#description').val();
+
+	map.eachLayer((layer) => {
+		if (layer['_latlng'] != undefined)
+			layer.remove();
+	});
 
 	data.forEach(function(item, i) {
+		let textMatch = false;
+		if (episode == '' && descr == '') {
+			textMatch = true;
+		} else {
+			if (episode.trim().length > 0)
+				textMatch = item.code.toLowerCase().includes(episode.toLowerCode());
+
+			if (descr.trim().length > 0) {
+				try {
+					textMatch |= item.title.toLowerCase().includes(descr.toLowerCase())
+						|| item.longTitle.toLowerCase().includes(descr.toLowerCase());
+				} catch (e) { }
+			}
+		}
 		item.locations.forEach(function(locItem, locIdx) {
-			console.log(item);
-			if (locItem.lat) {
-				var marker = L.marker([locItem.lat, locItem.lng]);
-				marker.bindPopup('<div class="title">' + item.code + ' '
-					+ item.title + '</div><div class="location">'
-					+ locItem.text + '</div><div class="description">'
-					+ item.longTitle + "</div><div>"
-					+ item.themes + "</div>").openPopup();
-				marker.addTo(map);
+			let hasTheme = false;
+			if (themes != null && themes.length > 0) {
+				themes.forEach(function(theme) {
+					if (theme === '') {
+						hasTheme = true;
+					} else if (item.themes && item.themes.includes(theme)) {
+						hasTheme = true;
+					}
+				});
+			} else {
+				hasTheme = true;
+			}
+
+			if (textMatch && hasTheme) {
+				console.log(item);
+				if (locItem.lat) {
+					var marker = L.marker([locItem.lat, locItem.lng]);
+					marker.bindPopup('<div class="title">' + item.code + ' '
+						+ item.title + '</div><div class="location">'
+						+ locItem.text + '</div><div class="description">'
+						+ item.longTitle + "</div><div>"
+						+ item.themes + "</div>").openPopup();
+					marker.addTo(map);
+				}
 			}
 		});
 	});
