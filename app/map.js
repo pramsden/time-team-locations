@@ -36,6 +36,10 @@ function initThemes() {
 		themes = $('select#theme-select').val();
 		updateMarkers();
 	});
+	
+	$('#only-video').on('change', function() {
+		updateMarkers();
+	});
 }
 
 function initMap() {
@@ -56,6 +60,7 @@ function initMap() {
 function updateMarkers() {
 	let episode = $('#episode').val();
 	let descr = $('#description').val();
+	let youtube = $('#only-video').prop('checked');
 
 	map.eachLayer((layer) => {
 		if (layer['_latlng'] != undefined)
@@ -68,7 +73,7 @@ function updateMarkers() {
 			textMatch = true;
 		} else {
 			if (episode.trim().length > 0)
-				textMatch = item.code.toLowerCase().includes(episode.toLowerCode());
+				textMatch = item.code.toLowerCase().includes(episode.toLowerCase());
 
 			if (descr.trim().length > 0) {
 				try {
@@ -77,32 +82,38 @@ function updateMarkers() {
 				} catch (e) { }
 			}
 		}
-		item.locations.forEach(function(locItem, locIdx) {
-			let hasTheme = false;
-			if (themes != null && themes.length > 0) {
-				themes.forEach(function(theme) {
-					if (theme === '') {
-						hasTheme = true;
-					} else if (item.themes && item.themes.includes(theme)) {
-						hasTheme = true;
-					}
-				});
-			} else {
-				hasTheme = true;
-			}
-
-			if (textMatch && hasTheme) {
-				console.log(item);
-				if (locItem.lat) {
-					var marker = L.marker([locItem.lat, locItem.lng]);
-					marker.bindPopup('<div class="title">' + item.code + ' '
-						+ item.title + '</div><div class="location">'
-						+ locItem.text + '</div><div class="description">'
-						+ item.longTitle + "</div><div>"
-						+ item.themes + "</div>").openPopup();
-					marker.addTo(map);
+		if (textMatch && (youtube === false || item.youtube.length > 0)) {
+			item.locations.forEach(function(locItem, locIdx) {
+				let hasTheme = false;
+				if (themes != null && themes.length > 0) {
+					themes.forEach(function(theme) {
+						if (theme === '') {
+							hasTheme = true;
+						} else if (item.themes && item.themes.includes(theme)) {
+							hasTheme = true;
+						}
+					});
+				} else {
+					hasTheme = true;
 				}
-			}
-		});
+
+				if (hasTheme) {
+					console.log(item);
+					if (locItem.lat) {
+						var marker = L.marker([locItem.lat, locItem.lng]);
+						let html = '<div class="title">' + item.code + ' '
+							+ item.title + '</div><div class="location">'
+							+ locItem.text + '</div><div class="description">'
+							+ item.longTitle + "</div><div>"
+							+ item.themes + "</div>";
+						if (item.youtube.length > 0) {
+							html += '<div><a href="https://www.youtube.com/watch?v=' + item.youtube + '" target="YOUTUBE">Watch on youtube</a></div>';
+						}
+						marker.bindPopup(html).openPopup();
+						marker.addTo(map);
+					}
+				}
+			});
+		}
 	});
 }

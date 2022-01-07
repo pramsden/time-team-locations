@@ -28,6 +28,7 @@ public class ConvertXLS {
 	private static final int COL_COORDINATES = 7;
 	private static final int COL_THEME = 8;
 	private static final int COL_DATE = 9;
+	private static final int COL_YOUTUBE = 10;
 
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.US);
@@ -56,6 +57,7 @@ public class ConvertXLS {
 				if (d != null && d.trim().length() > 0) {
 					epi.date = sdf.parse(d);
 				}
+				epi.youtube = row.getCell(COL_YOUTUBE) == null ? "" : row.getCell(COL_YOUTUBE).toString();
 				epi.locations = Location.parse(row.getCell(COL_LOCATION).toString(),
 						row.getCell(COL_COORDINATES).toString());
 				epi.themes = row.getCell(COL_THEME) == null ? null : row.getCell(COL_THEME).toString().split(";");

@@ -12,6 +12,7 @@ public class Episode {
 	public Location[] locations;
 	public String[] themes;
 	public Date date;
+	public String youtube;
 	
 	@Override
 	public String toString() {
