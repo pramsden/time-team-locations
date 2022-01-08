@@ -135,5 +135,9 @@ body {
 	font-size: 80%;
 }
 
+.leaflet-container a, .leaflet-container a:hover {
+	color:blue;
+}
+
 #filter-popup {
 }

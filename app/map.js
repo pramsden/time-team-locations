@@ -43,7 +43,7 @@ function initThemes() {
 }
 
 function initMap() {
-	map = L.map('map').setView([53, -0.29], 7);
+	map = L.map('map').setView([54, -1.3], 6);
 
 	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -58,6 +58,7 @@ function initMap() {
 }
 
 function updateMarkers() {
+	let matches = 0;
 	let episode = $('#episode').val();
 	let descr = $('#description').val();
 	let youtube = $('#only-video').prop('checked');
@@ -100,6 +101,7 @@ function updateMarkers() {
 				if (hasTheme) {
 					console.log(item);
 					if (locItem.lat) {
+						matches++;
 						var marker = L.marker([locItem.lat, locItem.lng]);
 						let html = '<div class="title">' + item.code + ' '
 							+ item.title + '</div><div class="location">'
@@ -113,6 +115,8 @@ function updateMarkers() {
 						marker.addTo(map);
 					}
 				}
+				
+				$('#matches').text(matches + ' matches');
 			});
 		}
 	});
